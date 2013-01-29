@@ -9,10 +9,11 @@ class LevenPhraseSimMeasurer(PhraseSimMeasurer):
     def measure_phrase_sim(self, response):
         response_words = response.split()
         memo = {}
-        dist = levenshtein_distance(self.search_words, 0, response_words, 0, memo)
+        dist = self.levenshtein_distance(self.search_words, 0, response_words, 0, memo)
+        return dist
 
     # compute the levenshtein distance of two phrases
-    def levenshtein_distance(self, search_words, search_inex, response_words, response_index, memo):
+    def levenshtein_distance(self, search_words, search_index, response_words, response_index, memo):
         num_search_words = len(search_words)
         num_response_words = len(response_words)
         if search_index == num_search_words:
@@ -40,7 +41,4 @@ class LevenPhraseSimMeasurer(PhraseSimMeasurer):
                        self.levenshtein_distance(search_words, search_index, response_words, response_index+1, memo) + 1,
                        self.levenshtein_distance(search_words, search_index+1, response_words, response_index+1, memo) + cost)
             memo[key] = dist
-            return dist
-
-#measurer = LevenPhraseSimMeasurer("Happy Friday") 
-#print measurer.measure_phrase_sim("Happy Friday")
+            return 1 / (dist + 1)

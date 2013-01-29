@@ -13,15 +13,24 @@ class RelevantRespGenerator:
         self.brown_ic = brown_ic 
         self.client = spotify_client
 
+    # Create the Levenshtein Distance to measure the similarity between search and response queries
+    def create_levenshtein_measurer(self, search_query):
+        self.measurer = LevenPhraseSimMeasurer(search_query)
+
+    # Create the Semantic Similarity to measure the similarity between search and response queries
+    def create_semantic_measurer(self, search_query):
+        self.measurer = NLPPhraseSimMeasurer(search_query)
 
     # Generate the most relevant responses from Spotify with given search_query
     def generate_response(self, search_query):
+        search_query = search_query.lower()
 
         # Get a list of Track objects which are the response tracks from Spotify
         playlist = self.get_playlist(search_query)
 
         # for each response track, compute the semantic similarity between search_query and response track name
-        self.measurer = NLPPhraseSimMeasurer(self.brown_ic, search_query)
+        self.create_levenshtein_measurer(search_query)
+
         for track in playlist:
             phrase_sim = self.measurer.measure_phrase_sim(track.name)
             track.set_similarity(phrase_sim)
