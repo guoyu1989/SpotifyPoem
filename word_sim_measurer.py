@@ -45,6 +45,8 @@ class WordSimMeasurer:
             word2_synsets = synsets[1]
 
         # get the maximum semantic similarity between all pairs of <word1_synset, word2_synset>
+        sim = self.measure_synsets(word1_synsets, word2_synsets)
+        return sim
     
     # Extract both words' synsets based on given POS tag
     # param word1_raw_synsets : all the synsets of word1
