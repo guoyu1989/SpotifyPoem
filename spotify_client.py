@@ -1,13 +1,13 @@
 import httplib
 import urllib
 import json
+from sets import Set
 from track import Track
 
 class SpotifyClient:
 
     SPOTIFY_URL = 'ws.spotify.com'
     SEARCH_URL = '/search/1/track.json?q='
-    HEADER = {"Content-type":"application/x-www-form-urlencoded","Accept":"application/json"}
 
     # Open a new http connection on creating an instance
     def __init__(self):
@@ -56,6 +56,9 @@ class SpotifyClient:
     # Return a simplified map with only columns <album, name, artist, length>
     def parse_response(self, response_json):
         playlist = []
+
+        # used to get rid of duplicate tracks in same album
+        album_set = Set()
         parsed_json = json.loads(response_json)
 
         # first check if the json can be correctly parsed
@@ -66,7 +69,11 @@ class SpotifyClient:
         for json_track in json_tracks:
             track = Track()
             curTrackMap = {}
-            track.set_album(json_track['album']['name'].encode('utf-8').lower())
+            album = json_track['album']['name'].encode('utf-8').lower()
+            if album in album_set:
+                continue
+            album_set.add(album)
+            track.set_album(album)
             track.set_name(json_track['name'].encode('utf-8').lower())
             artists = json_track['artists']
             artists_name = []

@@ -1,8 +1,11 @@
 from track import Track
+from phrase_sim_measurer import PhraseSimMeasurer
+from spotify_client import SpotifyClient
 from nlp_phrase_sim_measurer import NLPPhraseSimMeasurer
 from leven_phrase_sim_measurer import LevenPhraseSimMeasurer
 from naive_phrase_sim_measurer import NaivePhraseSimMeasurer
-from spotify_client import SpotifyClient
+from config import Config
+
 # coding: utf-8
 
 # A class generates the relevance response from spotify given a search query
@@ -11,17 +14,16 @@ class RelevantRespGenerator:
     # a constant controls the number of relevant responses
     RESPONSE_NUM = 3
 
-    def __init__(self, brown_ic, spotify_client, measurer):
+    def __init__(self, brown_ic, spotify_client):
         self.brown_ic = brown_ic 
         self.client = spotify_client
-        self.measurer = measurer
 
     def create_phrase_measurer(self, search_query):
-        if self.measurer_type == 'levenshtein':
+        if Config.s_measurer == 'levenshtein':
             self.create_levenshtein_measurer(search_query)
-        elif self.measurer_type == 'naive':
+        elif Config.s_measurer == 'naive':
             self.create_naive_measurer(search_query)
-        elif self.measurer_type == 'semantic':
+        elif Config.s_measurer == 'semantic':
             self.create_semantic_measurer(search_query)
         else:
             raise ValueError("Only levenshtein, naive and semantic are allowed for measurer")
@@ -46,8 +48,7 @@ class RelevantRespGenerator:
         playlist = self.get_playlist(search_query)
 
         # for each response track, compute the semantic similarity between search_query and response track name
-        create_phrase_measurer(search_query)
-
+        self.create_phrase_measurer(search_query)
         for track in playlist:
             phrase_sim = self.measurer.measure_phrase_sim(track.name)
             #print track.name.encode('utf-8') + ":" + str(phrase_sim)
@@ -62,9 +63,3 @@ class RelevantRespGenerator:
     def get_playlist(self, search_query):
         return self.client.get_playlist(search_query) 
 
-#spotify_client = SpotifyClient()
-#generator = RelevantRespGenerator(None, spotify_client)
-#small_playlist = generator.generate_response("if i can't")
-#print len(small_playlist)
-#for track in small_playlist:
-#    print track.name + ":" + track.album + ":" + str(track.similarity)

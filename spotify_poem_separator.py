@@ -1,17 +1,12 @@
-# coding: utf-8 
-#! /usr/bin/python
-
 import Queue
 from optparse import OptionParser
 from spotify_client import SpotifyClient
 from relevant_resp_generator import RelevantRespGenerator
 from separation_thread import SeparationThread
+from config import Config
 
 # A class used for getting the optimal separation of a poem query
 class SpotifyPoemSeparator:
-
-    TRACK_NUM = 15
-    THREAD_NUM = 3
 
     def __init__(self, brown_ic=None):
         self.brown_ic = brown_ic
@@ -21,7 +16,7 @@ class SpotifyPoemSeparator:
 
     # Separate the search_query and get the separations' most relevant playlist
     # param search_query : a search query of spotify poem
-    def get_optimal_playlists(self, search_query, multithread=False):
+    def get_optimal_playlist(self, search_query):
         search_query = search_query.encode('utf-8').lower()
 
         # if cache already contains the playlist for this search query, simply return it
@@ -31,9 +26,9 @@ class SpotifyPoemSeparator:
         # recursively separate the search_query, get a list of different separation
         all_separations = self.get_all_separations(search_query)
 
-        if multithread:
+        if Config.s_thread_num > 1:
             # Use multi thread to find optimal playlist
-            return self.multithread_separate(all_separations, SpotifyPoemSeparator.THREAD_NUM)
+            return self.multithread_separate(all_separations, Config.s_thread_num)
         else:
             max_score = 0
             optimal_playlist = []
@@ -80,7 +75,6 @@ class SpotifyPoemSeparator:
             if max_score < result[0]:
                 max_score = result[0]
                 best_playlist = result[1]
-
         return best_playlist
 
 
@@ -112,7 +106,7 @@ class SpotifyPoemSeparator:
             all_playlist += cur_playlist
             # get the tracks with the highest score as the final playlist
             sorted(all_playlist)
-            all_playlist = all_playlist[0 : SpotifyPoemSeparator.TRACK_NUM]
+            all_playlist = all_playlist[0 : Config.s_track_num]
         return [total_score / len(separation), all_playlist]
 
     # Get all the separations for a search query
@@ -152,8 +146,20 @@ class SpotifyPoemSeparator:
         separation_map[word_index] = cur_separations
         return cur_separations
 
-def validate_comm_parameters(params):
-    print params
+# validate the command line arguments
+def validate_comm_args((options, args)):
+    if not args:
+        raise ValueError("Please provide the search query")
+    if len(args) > 1:
+        raise ValueError("Only one search query is allowed, please quote you search query")
+    if options.measurer != "levenshtein" and options.measurer != "semantic" and options.measurer != "naive":
+        raise ValueError("Please give valid measurer, only 'levenshtein', 'semantic' and 'naive' are allowed")
+    thread_num = int(options.thread)
+    if thread_num > 4 or thread_num <= 0:
+        raise ValueError("Only 1 - 3 threads are allowed for running the program")
+    track_num = int(options.num)
+    if track_num <= 0:
+        raise ValueError("at least 1 track in the response playlist")
 
 parser = OptionParser()
 parser.add_option("-m", "--measurer", 
@@ -165,11 +171,19 @@ parser.add_option("-m", "--measurer",
 parser.add_option("-t", "--thread", help="the number of threads running the program")
 parser.add_option("-n", "--num", help="the total number of tracks return by the program")
 (options, args) = parser.parse_args()
-params = (options, args)
-validate_comm_parameters(params)
-#(options, args) = parser.parse_args()
+validate_comm_args((options, args))
 
-#separator = SpotifyPoemSeparator(None)
-#playlists = separator.get_optimal_playlists("if i can't let it go out of my mind", True)
-#for track in playlists:
-#    print track.name.encode('utf-8') + ":" + track.album.encode('utf-8') + ":" + str(track.similarity)
+Config.s_thread_num = int(options.thread)
+Config.s_track_num = int(options.num)
+Config.s_measurer = options.measurer
+search_query = args[0]
+
+separator = SpotifyPoemSeparator()
+playlist = separator.get_optimal_playlist(search_query)
+header = ['name', 'album', 'artists', 'similarity']
+print ' | '.join(header)
+for track in playlist:
+    print track.artists
+    decoded_artists = [artist.decode('utf-8') for artist in track.artists]
+    track_info = [track.name.decode('utf-8'), track.album.decode('utf-8'),  str(track.similarity)]
+    print ' | '.join(track_info)
