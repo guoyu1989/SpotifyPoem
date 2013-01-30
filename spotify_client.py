@@ -43,9 +43,13 @@ class SpotifyClient:
         key_words = search_query.split()
         if len(key_words) == 0:
             raise Exception("The search query must contain some words to search")
+        for i in range(len(key_words)):
+            key_words[i] = key_words[i].encode('utf-8')
         params = '+'.join(key_words)
         self.conn.request("GET", SpotifyClient.SEARCH_URL + params)
+        self.conn.sock.settimeout(10.0)
         response = self.conn.getresponse()
+        print response.status
         data = response.read()
         return data
 

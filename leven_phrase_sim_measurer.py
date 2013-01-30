@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from phrase_sim_measurer import PhraseSimMeasurer
 
 # A class measure the similarity of two sentences with Levenshtein distance
@@ -10,7 +12,7 @@ class LevenPhraseSimMeasurer(PhraseSimMeasurer):
         response_words = response.split()
         memo = {}
         dist = self.levenshtein_distance(self.search_words, 0, response_words, 0, memo)
-        return dist
+        return 1 / float((dist + 1))
 
     # compute the levenshtein distance of two phrases
     def levenshtein_distance(self, search_words, search_index, response_words, response_index, memo):
@@ -41,4 +43,9 @@ class LevenPhraseSimMeasurer(PhraseSimMeasurer):
                        self.levenshtein_distance(search_words, search_index, response_words, response_index+1, memo) + 1,
                        self.levenshtein_distance(search_words, search_index+1, response_words, response_index+1, memo) + cost)
             memo[key] = dist
-            return 1 / (dist + 1)
+            return dist
+
+#measurer = LevenPhraseSimMeasurer(u'\u5341\u4e8c\u751f\u8096')
+#print measurer.levenshtein_distance([u'\u5341\u4e8c\u751f\u8096', u'12', u'zodiacs'], 0, [u'\u5341\u4e8c\u751f\u8096'], 0, {})
+#print measurer.measure_phrase_sim(response)
+#print measurer.measure_phrase_sim(u'\u5341\u4e8c\u751f\u8096')

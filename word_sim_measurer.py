@@ -19,6 +19,7 @@ class WordSimMeasurer:
     def load_synsets(self, words):
         for word in words:
             if not word in self.synset_map:
+                print word
                 self.synset_map[word] = wn.synsets(word)
 
     # measure the semantic similarity between a pair of words 
@@ -88,6 +89,7 @@ class WordSimMeasurer:
 
     # Use the distance of two words to measure similarity
     def path_sim(self, word1_synset, word2_synset):
+        print word1_synset.name + ":" + word2_synset.name
         return word1_synset.path_similarity(word2_synset)
 
     # Map the Penn POS tag to POS tag used by WordNet::Similarity
