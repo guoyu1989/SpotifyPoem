@@ -1,8 +1,10 @@
 # coding: utf-8 
+#! /usr/bin/python
 
+import Queue
+from optparse import OptionParser
 from spotify_client import SpotifyClient
 from relevant_resp_generator import RelevantRespGenerator
-import Queue
 from separation_thread import SeparationThread
 
 # A class used for getting the optimal separation of a poem query
@@ -17,13 +19,10 @@ class SpotifyPoemSeparator:
         self.score_cache = {}
         self.playlist_cache = {}
 
-
     # Separate the search_query and get the separations' most relevant playlist
     # param search_query : a search query of spotify poem
     def get_optimal_playlists(self, search_query, multithread=False):
-
-        #search_query.encode('utf-8')
-        search_query = search_query.lower()
+        search_query = search_query.encode('utf-8').lower()
 
         # if cache already contains the playlist for this search query, simply return it
         if search_query in self.playlist_cache:
@@ -34,7 +33,7 @@ class SpotifyPoemSeparator:
 
         if multithread:
             # Use multi thread to find optimal playlist
-            return self.multithread_separate(all_separations)
+            return self.multithread_separate(all_separations, SpotifyPoemSeparator.THREAD_NUM)
         else:
             max_score = 0
             optimal_playlist = []
@@ -53,8 +52,7 @@ class SpotifyPoemSeparator:
             return optimal_playlist
 
     # Get optimal separation with multi-threads
-    def multithread_separate(self, separations):
-        thread_num = SpotifyPoemSeparator.THREAD_NUM
+    def multithread_separate(self, separations, thread_num):
         num_separations = len(separations)
 
         # the number of separations that each thread will be responsible for
@@ -154,7 +152,24 @@ class SpotifyPoemSeparator:
         separation_map[word_index] = cur_separations
         return cur_separations
 
-separator = SpotifyPoemSeparator(None)
-playlists = separator.get_optimal_playlists(u"if i can't let it go out of my mind", True)
-for track in playlists:
-    print track.name.encode('utf-8') + ":" + track.album.encode('utf-8') + ":" + str(track.similarity)
+def validate_comm_parameters(params):
+    print params
+
+parser = OptionParser()
+parser.add_option("-m", "--measurer", 
+                 help= "the phrase measurer to measure similarity of two phrases\n" + 
+                       "levenshtein : use levenshtein distance for measuring\n" + 
+                       "naive : use navie words' identical comparison for measuring\n" +
+                       "semantic : use semantic measuring technique in the reference paper (deprecated)\n"
+                       )
+parser.add_option("-t", "--thread", help="the number of threads running the program")
+parser.add_option("-n", "--num", help="the total number of tracks return by the program")
+(options, args) = parser.parse_args()
+params = (options, args)
+validate_comm_parameters(params)
+#(options, args) = parser.parse_args()
+
+#separator = SpotifyPoemSeparator(None)
+#playlists = separator.get_optimal_playlists("if i can't let it go out of my mind", True)
+#for track in playlists:
+#    print track.name.encode('utf-8') + ":" + track.album.encode('utf-8') + ":" + str(track.similarity)

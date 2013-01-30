@@ -1,6 +1,7 @@
 from track import Track
 from nlp_phrase_sim_measurer import NLPPhraseSimMeasurer
 from leven_phrase_sim_measurer import LevenPhraseSimMeasurer
+from naive_phrase_sim_measurer import NaivePhraseSimMeasurer
 from spotify_client import SpotifyClient
 # coding: utf-8
 
@@ -10,17 +11,32 @@ class RelevantRespGenerator:
     # a constant controls the number of relevant responses
     RESPONSE_NUM = 3
 
-    def __init__(self, brown_ic, spotify_client):
+    def __init__(self, brown_ic, spotify_client, measurer):
         self.brown_ic = brown_ic 
         self.client = spotify_client
+        self.measurer = measurer
 
-    # Create the Levenshtein Distance to measure the similarity between search and response queries
+    def create_phrase_measurer(self, search_query):
+        if self.measurer_type == 'levenshtein':
+            self.create_levenshtein_measurer(search_query)
+        elif self.measurer_type == 'naive':
+            self.create_naive_measurer(search_query)
+        elif self.measurer_type == 'semantic':
+            self.create_semantic_measurer(search_query)
+        else:
+            raise ValueError("Only levenshtein, naive and semantic are allowed for measurer")
+
+    # Create the Levenshtein Distance to measure the similarity between search and response phrases
     def create_levenshtein_measurer(self, search_query):
         self.measurer = LevenPhraseSimMeasurer(search_query)
 
-    # Create the Semantic Similarity to measure the similarity between search and response queries
+    # Create the Semantic Similarity measurer to measure the similarity between search and response phrases
     def create_semantic_measurer(self, search_query):
         self.measurer = NLPPhraseSimMeasurer(self.brown_ic, search_query)
+
+    # Create a naive identical words measurer to measure similarity between search and response phrases
+    def create_naive_measurer(self, search_query):
+        self.measurer = NaivePhraseSimMeasurer(search_query)
 
     # Generate the most relevant responses from Spotify with given search_query
     def generate_response(self, search_query):
@@ -30,8 +46,7 @@ class RelevantRespGenerator:
         playlist = self.get_playlist(search_query)
 
         # for each response track, compute the semantic similarity between search_query and response track name
-        #self.create_levenshtein_measurer(search_query)
-        self.create_semantic_measurer(search_query)
+        create_phrase_measurer(search_query)
 
         for track in playlist:
             phrase_sim = self.measurer.measure_phrase_sim(track.name)

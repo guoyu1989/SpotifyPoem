@@ -49,7 +49,6 @@ class SpotifyClient:
         self.conn.request("GET", SpotifyClient.SEARCH_URL + params)
         self.conn.sock.settimeout(10.0)
         response = self.conn.getresponse()
-        print response.status
         data = response.read()
         return data
 
@@ -67,12 +66,12 @@ class SpotifyClient:
         for json_track in json_tracks:
             track = Track()
             curTrackMap = {}
-            track.set_album(json_track['album']['name'].lower())
-            track.set_name(json_track['name'].lower())
+            track.set_album(json_track['album']['name'].encode('utf-8').lower())
+            track.set_name(json_track['name'].encode('utf-8').lower())
             artists = json_track['artists']
             artists_name = []
             for artist in artists:
-                artists_name.append(artist['name'].lower())
+                artists_name.append(artist['name'].encode('utf-8').lower())
             track.set_artists(artists_name)
             track.set_length(json_track['length'])
             playlist.append(track)
