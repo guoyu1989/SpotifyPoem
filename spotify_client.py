@@ -4,10 +4,6 @@ import json
 from sets import Set
 from track import Track
 
-import sys 
-reload(sys) 
-sys.setdefaultencoding('utf8') 
-
 class SpotifyClient:
 
     SPOTIFY_URL = 'ws.spotify.com'

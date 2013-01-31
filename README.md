@@ -32,7 +32,23 @@ Naive : Use the identical words to measure similarity of two phrases, but meanwh
     <happy friday, happy wednesday> 0.35
 
 ## Result
-the number of result tracks will be specified with input command line arguments. The response tracks will be sorted in descending order by their similarity
+The output contains 4 fields (album, name of track, artists, similarity) and they are delimited with ' | '
+
+### Example -- If I can't let it go out of my mind
+    if i can't | get rich or die tryin | 50 cent | 0.7
+    if i can't | get rich or die tryin' | 50 cent | 0.7
+    if i can't | if i can't/poppin' them thangs | 50 cent | 0.7
+    let it go | let it go | dragonette | 0.7
+    let it go | you get what you give | zac brown band | 0.7
+    let it go | thank you, | the neighbourhood | 0.7
+    out of my mind | back to bedlam | james blunt | 0.7
+    out of my mind | breakthrough | colbie caillat | 0.7
+    out of my mind | out of my mind / holy water | linde lindström,whocares,jon lord,ian gillan,nicko mcbrain,jason newsted,tony iommi | 0.7
+
+### Example --- 十二生肖
+    十二生肖 12 zodiacs | 十二生肖 12 zodiacs | 王力宏 wang leehom | 0.611749588455
+    the twelve chinese zodiac signs / 十二生肖歌 | bilingual songs: english-mandarin chinese, vol. 1 | sara jordan publishing | 0.19891007363
+    十二生肖年 (chinese zodiac year) | 十二生肖賀新年 (chinese zodiac wish happy new year) - ep | 紀懿珍 (ji yizhen) | 0.147391105332
 
 ## Parallel
 the number of threads can be specified with input command line argument, the recommended thread number is 4, which will speed up by double compared with single thread.
