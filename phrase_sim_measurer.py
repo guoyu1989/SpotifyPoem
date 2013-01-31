@@ -1,3 +1,7 @@
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf8') 
+
 # Base class provide the interface for measuring the similarity between two phrases
 class PhraseSimMeasurer:
 

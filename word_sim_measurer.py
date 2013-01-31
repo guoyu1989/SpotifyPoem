@@ -1,3 +1,7 @@
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf8') 
+
 # Base class for measure two words' similarity
 # subclasses implement the measure_pair_words_sim method to provide different measure methods
 

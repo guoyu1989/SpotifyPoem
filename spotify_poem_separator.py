@@ -1,3 +1,7 @@
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf8') 
+
 import Queue
 from optparse import OptionParser
 from spotify_client import SpotifyClient
@@ -17,7 +21,8 @@ class SpotifyPoemSeparator:
     # Separate the search_query and get the separations' most relevant playlist
     # param search_query : a search query of spotify poem
     def get_optimal_playlist(self, search_query):
-        search_query = search_query.encode('utf-8').lower()
+        search_query = search_query.lower()
+        #search_query = search_query.encode('utf-8').lower()
 
         # if cache already contains the playlist for this search query, simply return it
         if search_query in self.playlist_cache:
@@ -183,7 +188,5 @@ playlist = separator.get_optimal_playlist(search_query)
 header = ['name', 'album', 'artists', 'similarity']
 print ' | '.join(header)
 for track in playlist:
-    print track.artists
-    decoded_artists = [artist.decode('utf-8') for artist in track.artists]
-    track_info = [track.name.decode('utf-8'), track.album.decode('utf-8'),  str(track.similarity)]
+    track_info = [track.name, track.album, ','.join(track.artists),  str(track.similarity)]
     print ' | '.join(track_info)

@@ -4,6 +4,10 @@ import json
 from sets import Set
 from track import Track
 
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf8') 
+
 class SpotifyClient:
 
     SPOTIFY_URL = 'ws.spotify.com'
@@ -44,7 +48,8 @@ class SpotifyClient:
         if len(key_words) == 0:
             raise Exception("The search query must contain some words to search")
         for i in range(len(key_words)):
-            key_words[i] = key_words[i].encode('utf-8')
+            #key_words[i] = key_words[i].encode('utf-8')
+            key_words[i] = key_words[i]
         params = '+'.join(key_words)
         self.conn.request("GET", SpotifyClient.SEARCH_URL + params)
         self.conn.sock.settimeout(10.0)
@@ -69,16 +74,16 @@ class SpotifyClient:
         for json_track in json_tracks:
             track = Track()
             curTrackMap = {}
-            album = json_track['album']['name'].encode('utf-8').lower()
+            album = json_track['album']['name'].lower()
             if album in album_set:
                 continue
             album_set.add(album)
             track.set_album(album)
-            track.set_name(json_track['name'].encode('utf-8').lower())
+            track.set_name(json_track['name'].lower())
             artists = json_track['artists']
             artists_name = []
             for artist in artists:
-                artists_name.append(artist['name'].encode('utf-8').lower())
+                artists_name.append(artist['name'].lower())
             track.set_artists(artists_name)
             track.set_length(json_track['length'])
             playlist.append(track)

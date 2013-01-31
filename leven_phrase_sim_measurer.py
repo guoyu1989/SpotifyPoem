@@ -44,8 +44,3 @@ class LevenPhraseSimMeasurer(PhraseSimMeasurer):
                        self.levenshtein_distance(search_words, search_index+1, response_words, response_index+1, memo) + cost)
             memo[key] = dist
             return dist
-
-#measurer = LevenPhraseSimMeasurer(u'\u5341\u4e8c\u751f\u8096')
-#print measurer.levenshtein_distance([u'\u5341\u4e8c\u751f\u8096', u'12', u'zodiacs'], 0, [u'\u5341\u4e8c\u751f\u8096'], 0, {})
-#print measurer.measure_phrase_sim(response)
-#print measurer.measure_phrase_sim(u'\u5341\u4e8c\u751f\u8096')

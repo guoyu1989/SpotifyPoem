@@ -6,6 +6,9 @@ from leven_phrase_sim_measurer import LevenPhraseSimMeasurer
 from naive_phrase_sim_measurer import NaivePhraseSimMeasurer
 from config import Config
 
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf8') 
 # coding: utf-8
 
 # A class generates the relevance response from spotify given a search query

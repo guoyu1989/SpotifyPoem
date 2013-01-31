@@ -3,6 +3,10 @@ from relevant_resp_generator import RelevantRespGenerator
 from spotify_client import SpotifyClient
 import Queue
 
+import sys 
+reload(sys) 
+sys.setdefaultencoding('utf8') 
+
 # A thread class which used to get the optimal separation of a search_query and its response playlist
 class SeparationThread (threading.Thread):
 
