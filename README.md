@@ -2,12 +2,9 @@
 This is the project for separating a poem into small phrases and get the similar tracks from spotify to form a playlist
 
 # references
-[Sentence Similarity Based on Semantic Nets and Corpus Statistics]
-(http://ants.iis.sinica.edu.tw/3BkMJ9lTeWXTSrrvNoKNFDxRm3zFwRR/55/Sentence%20Similarity%20Based%20on%20Semantic%20Nets%20and%20corpus%20statistics.pdf)
-
 [Sentence Similarity Based on Semantic Nets and Corpus Statistics](http://ants.iis.sinica.edu.tw/3BkMJ9lTeWXTSrrvNoKNFDxRm3zFwRR/55/Sentence%20Similarity%20Based%20on%20Semantic%20Nets%20and%20corpus%20statistics.pdf)
 
-# How to use it
+## How to use it
 python [-B] spotify_poesm_separator.py -m [levenshtein|naive|semantic] -t [number of threads] -n [number of tracks in the response playlist] search_query
 
 ### Example
